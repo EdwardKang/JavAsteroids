@@ -8,9 +8,8 @@
     this.ctx = ctx;
     this.timerId = null;
     this.asteroids = this.addAsteroids(10);
-    console.log(Asteroids);
-    console.log(Asteroids.Ship);
-    this.ship = new Asteroids.Ship([(Game.DIM_X / 2), (Game.DIM_Y / 2)], [0,0])
+    this.ship = new Asteroids.Ship([(Game.DIM_X / 2), (Game.DIM_Y / 2)], [0,0]);
+    this.bullets = [];
   };
 
   Game.DIM_X = 800;
@@ -36,6 +35,14 @@
     });
 
     this.ship.draw(game.ctx);
+
+    _.each(game.bullets, function(bullet) {
+      console.log("DRAWING BULLET");
+      bullet.draw(game.ctx);
+      console.log(bullet.color);
+      console.log(bullet.radius);
+      console.log(bullet.pos);
+    });
   };
 
   Game.prototype.move = function() {
@@ -44,6 +51,10 @@
     });
 
     this.ship.move(this.ship.vel);
+
+    _.each(this.bullets, function(bullet) {
+      bullet.move(bullet.vel);
+    });
   };
 
   Game.prototype.step = function() {
@@ -90,10 +101,16 @@
   Game.prototype.bindKeyHandlers = function() {
     var game = this;
 
-    key('up', function() { game.ship.power([0,-.25]) });
-    key('down', function() { game.ship.power([0,.25]) });
-    key('left', function() { game.ship.power([-.25,0]) });
-    key('right', function() { game.ship.power([.25,0]) });
+    key('up', function() { game.ship.power([0,-.25]); });
+    key('down', function() { game.ship.power([0,.25]); });
+    key('left', function() { game.ship.power([-.25,0]); });
+    key('right', function() { game.ship.power([.25,0]); });
+    key('space', function() { game.fireBullet(); });
+  };
+
+  Game.prototype.fireBullet = function() {
+    this.bullets.push(this.ship.fireBullet());
+    console.log("JUST FIRED");
   };
 
   Function.prototype.inherits = function(obj) {

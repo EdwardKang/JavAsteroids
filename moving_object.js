@@ -9,8 +9,8 @@
   };
 
   MovingObject.prototype.move = function(vel) {
-    this.pos[0] += vel[0]
-    this.pos[1] += vel[1]
+    this.pos[0] += vel[0];
+    this.pos[1] += vel[1];
   };
 
   MovingObject.prototype.draw = function(ctx) {
