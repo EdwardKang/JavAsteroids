@@ -1,8 +1,4 @@
 (function(root) {
-  if (!(typeof(require) === "undefined")) {
-      _ = require('./underscore.js');
-    }
-
   var Asteroids = root.Asteroids = (root.Asteroids || {});
 
   var MovingObject = Asteroids.MovingObject = function MovingObject(startPos, vel, radius, color) {
@@ -18,11 +14,11 @@
   };
 
   MovingObject.prototype.draw = function(ctx) {
-    var context = canvas.getContext(ctx);
-    context.beginPath();
-    context.arc(this.pos[0], this.pos[1], this.radius, 0, 2 * Math.PI, false);
-    context.fillStyle = this.color;
-    context.fill();
+    ctx.beginPath();
+    ctx.arc(this.pos[0], this.pos[1], this.radius, 0, 2 * Math.PI, false);
+    ctx.fillStyle = this.color;
+    ctx.fill();
+    ctx.closePath();
   };
 
   MovingObject.prototype.isCollidedWith = function(otherObject) {

@@ -1,0 +1,18 @@
+<html>
+  <head>
+    <script src='underscore.js'></script>
+    <script src='game.js'></script>
+    <script src='moving_object.js'></script>
+    <script src='asteroid.js'></script>
+  </head>
+  <body>
+    <canvas width="800" height="600" style="border:3px solid #000000;"></canvas>
+
+    <script>
+      var c = document.getElementsByTagName("canvas")[0];
+      var ctx = c.getContext("2d");
+      var newGame = new Asteroids.Game(ctx);
+      newGame.start();
+    </script>
+  </body>
+</html>
