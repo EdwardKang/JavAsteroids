@@ -1,7 +1,4 @@
 (function(root) {
-  if (!(typeof(require) === "undefined")) {
-      _ = require('./underscore.js');
-    }
 
   var Asteroids = root.Asteroids = (root.Asteroids || {});
   var Game = Asteroids.Game = function Game(ctx) {
@@ -27,8 +24,6 @@
 
   Game.prototype.draw = function() {
     var game = this;
-
-    console.log(game.asteroids);
 
     game.ctx.clearRect(0, 0, Game.DIM_X, Game.DIM_Y)
 
