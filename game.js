@@ -7,6 +7,8 @@
     this.asteroids = this.addAsteroids(10);
     this.ship = new Asteroids.Ship([(Game.DIM_X / 2), (Game.DIM_Y / 2)], [0,0], this);
     this.bullets = [];
+    this.background;
+    this.astImg;
   };
 
   Game.DIM_X = 800;
@@ -25,10 +27,12 @@
   Game.prototype.draw = function() {
     var game = this;
 
-    game.ctx.clearRect(0, 0, Game.DIM_X, Game.DIM_Y)
+    game.ctx.clearRect(0, 0, Game.DIM_X, Game.DIM_Y);
+
+    ctx.drawImage(this.background, 0, 0);
 
     _.each(game.asteroids, function(asteroid) {
-      asteroid.draw(game.ctx);
+      asteroid.draw(game.ctx, game.astImg);
     });
 
     this.ship.draw(game.ctx);
@@ -59,6 +63,20 @@
   Game.prototype.start = function() {
     var game = this;
     game.bindKeyHandlers();
+
+    var img = new Image();
+    img.onload = function () {
+      ctx.drawImage(img, 0, 0);
+    };
+    this.background = img;
+    img.src = 'stars.jpg';
+
+    var dolan = new Image();
+    dolan.onload = function () {
+      ctx.drawImage(dolan, 0, 0);
+    };
+    this.astImg = dolan;
+    dolan.src = 'dolanhead.png';
 
     game.timerId = window.setInterval(function() {
       game.step();
