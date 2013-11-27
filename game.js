@@ -8,7 +8,7 @@
     this.ctx = ctx;
     this.timerId = null;
     this.asteroids = this.addAsteroids(10);
-    this.ship = new Asteroids.Ship([(Game.DIM_X / 2), (Game.DIM_Y / 2)], [0,0]);
+    this.ship = new Asteroids.Ship([(Game.DIM_X / 2), (Game.DIM_Y / 2)], [0,0], this);
     this.bullets = [];
   };
 
@@ -20,13 +20,15 @@
     var asteroids = [];
 
     _.times(num, function() {
-      asteroids.push(Asteroids.Asteroid.randomAsteroid(Game.DIM_X, Game.DIM_Y));
+      asteroids.push(Asteroids.Asteroid.randomAsteroid(Game.DIM_X, Game.DIM_Y, this));
     });
     return asteroids;
   };
 
   Game.prototype.draw = function() {
     var game = this;
+
+    console.log(game.asteroids);
 
     game.ctx.clearRect(0, 0, Game.DIM_X, Game.DIM_Y)
 
@@ -37,11 +39,7 @@
     this.ship.draw(game.ctx);
 
     _.each(game.bullets, function(bullet) {
-      console.log("DRAWING BULLET");
       bullet.draw(game.ctx);
-      console.log(bullet.color);
-      console.log(bullet.radius);
-      console.log(bullet.pos);
     });
   };
 
@@ -61,7 +59,6 @@
     this.move();
     this.draw();
     this.checkCollisions();
-    this.removeAsteroids();
   };
 
   Game.prototype.start = function() {
@@ -83,14 +80,26 @@
     });
   };
 
-  Game.prototype.removeAsteroids = function() {
+  Game.prototype.removeAsteroid = function(hitAsteroid) {
     var game = this;
 
     _.each(game.asteroids, function(asteroid, idx) {
-      if ((asteroid.pos[0] < 0 || asteroid.pos[0] > Game.DIM_X) || (asteroid.pos[1] < 0 || asteroid.pos[1] > Game.DIM_Y)) {
-        game.asteroids[idx] = game.addAsteroids(1)[0];
+      if (hitAsteroid === asteroid) {
+        game.asteroids[idx] = false;
       }
     });
+    game.asteroids = _.compact(game.asteroids);
+  };
+
+  Game.prototype.removeBullet = function(usedBullet) {
+    var game = this;
+
+    _.each(game.bullets, function(bullet, idx) {
+      if (usedBullet === bullet) {
+        game.bullets[idx] = false;
+      }
+    });
+    game.bullets = _.compact(game.bullets);
   };
 
   Game.prototype.stop = function() {
@@ -110,7 +119,6 @@
 
   Game.prototype.fireBullet = function() {
     this.bullets.push(this.ship.fireBullet());
-    console.log("JUST FIRED");
   };
 
   Function.prototype.inherits = function(obj) {

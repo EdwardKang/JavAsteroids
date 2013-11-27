@@ -1,16 +1,26 @@
 (function(root) {
   var Asteroids = root.Asteroids = (root.Asteroids || {});
 
-  var MovingObject = Asteroids.MovingObject = function MovingObject(startPos, vel, radius, color) {
+  var MovingObject = Asteroids.MovingObject = function MovingObject(startPos, vel, radius, color, game) {
     this.pos = startPos;
     this.vel = vel;
     this.radius = radius;
     this.color = color;
+    this.game = game;
   };
 
   MovingObject.prototype.move = function(vel) {
     this.pos[0] += vel[0];
     this.pos[1] += vel[1];
+    if (this.pos[0] < 0) {
+      this.pos[0] = Asteroids.Game.DIM_X;
+    } else if (this.pos[0] > Asteroids.Game.DIM_X) {
+      this.pos[0] = 0;
+    } else if (this.pos[1] < 0) {
+      this.pos[1] = Asteroids.Game.DIM_Y;
+    } else if (this.pos[1] > Asteroids.Game.DIM_Y) {
+      this.pos[1] = 0;
+    }
   };
 
   MovingObject.prototype.draw = function(ctx) {
