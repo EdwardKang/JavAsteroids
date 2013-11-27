@@ -6,7 +6,11 @@
   var Asteroids = root.Asteroids = (root.Asteroids || {});
   var Game = Asteroids.Game = function Game(ctx) {
     this.ctx = ctx;
+    this.timerId = null;
     this.asteroids = this.addAsteroids(10);
+    console.log(Asteroids);
+    console.log(Asteroids.Ship);
+    this.ship = new Asteroids.Ship([(Game.DIM_X / 2), (Game.DIM_Y / 2)], [0,0])
   };
 
   Game.DIM_X = 800;
@@ -30,27 +34,66 @@
     _.each(game.asteroids, function(asteroid) {
       asteroid.draw(game.ctx);
     });
+
+    this.ship.draw(game.ctx);
   };
 
   Game.prototype.move = function() {
-    var game = this;
-
-    _.each(game.asteroids, function(asteroid) {
+    _.each(this.asteroids, function(asteroid) {
       asteroid.move(asteroid.vel);
     });
+
+    this.ship.move(this.ship.vel);
   };
 
   Game.prototype.step = function() {
     this.move();
     this.draw();
+    this.checkCollisions();
+    this.removeAsteroids();
   };
 
   Game.prototype.start = function() {
     var game = this;
+    game.bindKeyHandlers();
 
-    window.setInterval(function() {
+    game.timerId = window.setInterval(function() {
       game.step();
     }, Game.FPS);
+  };
+
+  Game.prototype.checkCollisions = function() {
+    var game = this;
+
+    _.each(game.asteroids, function(asteroid) {
+      if (asteroid.isCollidedWith(game.ship)) {
+        game.stop();
+      }
+    });
+  };
+
+  Game.prototype.removeAsteroids = function() {
+    var game = this;
+
+    _.each(game.asteroids, function(asteroid, idx) {
+      if ((asteroid.pos[0] < 0 || asteroid.pos[0] > Game.DIM_X) || (asteroid.pos[1] < 0 || asteroid.pos[1] > Game.DIM_Y)) {
+        game.asteroids[idx] = game.addAsteroids(1)[0];
+      }
+    });
+  };
+
+  Game.prototype.stop = function() {
+    window.clearInterval(this.timerId);
+    alert("GAME OVER!");
+  };
+
+  Game.prototype.bindKeyHandlers = function() {
+    var game = this;
+
+    key('up', function() { game.ship.power([0,-.25]) });
+    key('down', function() { game.ship.power([0,.25]) });
+    key('left', function() { game.ship.power([-.25,0]) });
+    key('right', function() { game.ship.power([.25,0]) });
   };
 
   Function.prototype.inherits = function(obj) {
@@ -58,5 +101,4 @@
     Surrogate.prototype = obj.prototype;
     this.prototype = new Surrogate();
   };
-
 })(this);
