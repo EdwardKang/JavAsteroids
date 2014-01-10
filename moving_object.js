@@ -9,9 +9,9 @@
     this.game = game;
   };
 
-  MovingObject.prototype.move = function(vel) {
-    this.pos[0] += vel[0];
-    this.pos[1] += vel[1];
+  MovingObject.prototype.move = function() {
+    this.pos[0] += this.vel[0];
+    this.pos[1] += this.vel[1];
     if (this.pos[0] < 0) {
       this.pos[0] = Asteroids.Game.DIM_X;
     } else if (this.pos[0] > Asteroids.Game.DIM_X) {

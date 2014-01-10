@@ -20,10 +20,4 @@
     var velY = Math.random() * 4 - 2;
     return [velX, velY];
   };
-
-  Function.prototype.inherits = function(obj) {
-    function Surrogate() {};
-    Surrogate.prototype = obj.prototype;
-    this.prototype = new Surrogate();
-  };
 })(this);

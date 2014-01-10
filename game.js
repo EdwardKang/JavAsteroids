@@ -1,17 +1,20 @@
 (function(root) {
 
   var Asteroids = root.Asteroids = (root.Asteroids || {});
-  var Game = Asteroids.Game = function Game(ctx) {
+  var Game = Asteroids.Game = function(ctx) {
     this.ctx = ctx;
     this.timerId = null;
     this.asteroids = this.addAsteroids(10);
-    this.ship = new Asteroids.Ship([(Game.DIM_X / 2), (Game.DIM_Y / 2)], [0,0], this);
+    this.ship = new Asteroids.Ship([(Game.DIM_X / 2), (Game.DIM_Y / 2)], [0,0], this, Math.PI);
     this.bullets = [];
+		this.fireBullet = false;
+		this.lastCreatedBullet = 0;
+		this.gameOver = false;
   };
 
-  Game.DIM_X = 800;
+  Game.DIM_X = 600;
   Game.DIM_Y = 600;
-  Game.FPS = 30;
+  Game.FPS = 15;
 
   Game.prototype.addAsteroids = function(num) {
     var asteroids = [];
@@ -40,20 +43,37 @@
 
   Game.prototype.move = function() {
     _.each(this.asteroids, function(asteroid) {
-      asteroid.move(asteroid.vel);
+      asteroid.move();
     });
 
-    this.ship.move(this.ship.vel);
+    this.ship.move();
 
     _.each(this.bullets, function(bullet) {
-      bullet.move(bullet.vel);
+      bullet.move();
     });
   };
 
   Game.prototype.step = function() {
+		this.fire(this.fireBullet);	
     this.move();
     this.draw();
     this.checkCollisions();
+		
+		var that = this;
+		
+		key('space', function(){ 
+			if (that.gameOver) {
+		    that.timerId = null;
+		    that.asteroids = that.addAsteroids(10);
+		    that.ship = new Asteroids.Ship([(Game.DIM_X / 2), (Game.DIM_Y / 2)], [0,0], that, Math.PI);
+		    that.bullets = [];
+				that.fireBullet = false;
+				that.lastCreatedBullet = 0;
+				that.gameOver = false;
+				
+				that.start();
+			}
+		});
   };
 
   Game.prototype.start = function() {
@@ -99,26 +119,33 @@
 
   Game.prototype.stop = function() {
     window.clearInterval(this.timerId);
-    alert("GAME OVER!");
+		ctx.fillStyle = "black";
+		ctx.font = "20pt Arial";
+		ctx.fillText("GAMEOVER", 222.5,250);
+		ctx.font = "10pt Arial";
+		ctx.fillText("press space to continue", 230,265)
+		this.gameOver = true;
   };
 
   Game.prototype.bindKeyHandlers = function() {
     var game = this;
+    
+	  key('left', function(){ game.ship.angularVelocity = -(Math.PI/30) });
+	  key('right', function(){ game.ship.angularVelocity = (Math.PI/30) });
+	  key('up', function(){ game.ship.power = true });
+    key('space', function() { game.fireBullet = true; });
+		
 
-    key('up', function() { game.ship.power([0,-.25]); });
-    key('down', function() { game.ship.power([0,.25]); });
-    key('left', function() { game.ship.power([-.25,0]); });
-    key('right', function() { game.ship.power([.25,0]); });
-    key('space', function() { game.fireBullet(); });
+	  keyup('right', function(){ game.ship.angularVelocity = 0 });
+	  keyup('left', function(){ game.ship.angularVelocity = 0 });
+	  keyup('up', function(){ game.ship.power = false });
+		keyup('space', function() { game.fireBullet = false; });
   };
 
-  Game.prototype.fireBullet = function() {
-    this.bullets.push(this.ship.fireBullet());
-  };
-
-  Function.prototype.inherits = function(obj) {
-    function Surrogate() {};
-    Surrogate.prototype = obj.prototype;
-    this.prototype = new Surrogate();
+  Game.prototype.fire = function(isShooting) {
+		if (isShooting == true && (Date.now() - this.lastCreatedBullet > 100 )) {
+	    this.bullets.push(this.ship.fireBullet());
+			this.lastCreatedBullet = Date.now()
+		}
   };
 })(this);
